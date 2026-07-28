@@ -693,9 +693,9 @@ namespace GeeBeeEmu
                     }
                     break;
                 case 3:
-                    sp += s8;
+                    pc += s8;
                     
-                    isRunningInstruction = true;
+                    isRunningInstruction = false;
                     break;
                 
             }
@@ -804,9 +804,9 @@ namespace GeeBeeEmu
                     }
                     break;
                 case 3:
-                    sp += s8;
+                    pc += s8;
                     
-                    isRunningInstruction = true;
+                    isRunningInstruction = false;
                     break;
                 
             }
@@ -910,9 +910,9 @@ namespace GeeBeeEmu
                     }
                     break;
                 case 3:
-                    sp += s8;
+                    pc += s8;
                     
-                    isRunningInstruction = true;
+                    isRunningInstruction = false;
                     break;
                 
             }
@@ -930,18 +930,162 @@ namespace GeeBeeEmu
                 case 3:
                     SP_splitable.upper = addressSpace[pc + 2];
 
-                    sp = SP_splitable.fullRegister;w
+                    sp = SP_splitable.fullRegister;
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void LD_HL_DEC_A()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    addressSpace[HL.getFullRegister()] = AF.upper;
+                    HL.fullRegister -= 1;
+
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void INC_SP()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    sp += 1;
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void INC_AT_HL()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    addressSpace[HL.getFullRegister()] += 1;
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void DEC_AT_HL()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    addressSpace[HL.getFullRegister()] -= 1;
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void LD_HL_D8(byte d8)
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    addressSpace[HL.getFullRegister()] = d8;
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void SCF()
+        {
+            AF.lower = BitUtil.setBit(AF.lower, 4);
+            isRunningInstruction = false;
+        }
+
+        public void JR_C_S8(byte s8)
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    if (!BitUtil.getBit(AF.lower, 4))
+                    {
+                        isRunningInstruction = false;
+                    }
+                    break;
+                case 3:
+                    pc += s8;
+
+                    isRunningInstruction = false;
+                    break;
+                
+            }
+        }
+
+        public void ADD_HL_SP()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    HL.fullRegister = (ushort)(HL.getFullRegister() + sp);
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void LD_A_HL_DEC()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    AF.upper = addressSpace[HL.getFullRegister()];
+                    HL.fullRegister -= 1;
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void DEC_SP()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    sp -= 1;
                     isRunningInstruction = false;
                     break;
             }
         }
         
         
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
 
         #endregion
 

@@ -218,6 +218,7 @@ namespace GeeBeeEmu
         private static Register BC;
         private static Register DE;
         private static Register HL;
+        private static Register SP_splitable;
 
 
         static byte opcode; //stores the current opcode
@@ -665,12 +666,9 @@ namespace GeeBeeEmu
             switch (cycleCounter)
             {
                 case 1:
-                    break; //opcode fetch
-                case 2:
-                    DE.lower = addressSpace[pc + 1];
                     break;
-                case 3:
-                    DE.lower = addressSpace[pc + 2];
+                case 2:
+                    DE.lower = d8;
 
                     isRunningInstruction = false;
                     break;
@@ -682,7 +680,7 @@ namespace GeeBeeEmu
             //enough
         }
 
-        public void JR_NZ_s8(byte s8)
+        public void JR_NZ_S8(byte s8)
         {
             switch (cycleCounter)
             {
@@ -760,7 +758,183 @@ namespace GeeBeeEmu
             
             isRunningInstruction = false;
         }
+
+
+        public void DEC_H()
+        {
+            HL.upper -= 1;
+
+            if (HL.upper == 0)
+            {
+                AF.lower = BitUtil.toggleBit(AF.lower, 7);
+            }
+            
+            isRunningInstruction = false;
+        }
+
+        public void LD_H_D8(byte d8)
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    HL.upper = d8;
+
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void DAA()
+        {
+            //shrug emoji
+        }
+
+        public void JR_Z_S8(byte s8)
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    if (!BitUtil.getBit(AF.lower, 7))
+                    {
+                        isRunningInstruction = false;
+                    }
+                    break;
+                case 3:
+                    sp += s8;
+                    
+                    isRunningInstruction = true;
+                    break;
+                
+            }
+        }
+
+        public void ADD_HL_HL()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    HL.fullRegister += HL.getFullRegister();
+                    
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void LD_A_HL_INC()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    AF.upper = addressSpace[HL.getFullRegister()];
+                    HL.fullRegister += 1;
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void DEC_HL()
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    HL.fullRegister = (ushort)(HL.getFullRegister() - 1);
+                    
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void INC_L()
+        {
+            HL.lower += 1;
+
+            if (HL.lower == 0)
+            {
+                AF.lower = BitUtil.toggleBit(AF.lower, 7);
+            }
+            
+            isRunningInstruction = false;
+        }
         
+        public void DEC_L()
+        {
+            HL.lower -= 1;
+
+            if (HL.lower == 0)
+            {
+                AF.lower = BitUtil.toggleBit(AF.lower, 7);
+            }
+            
+            isRunningInstruction = false;
+        }
+
+        public void LD_L_D8(byte d8)
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    HL.lower = d8;
+
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
+
+        public void CPL()
+        {
+            //flip all the bits of a
+        }
+
+        public void JR_NC_S8(byte s8)
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break;
+                case 2:
+                    if (!BitUtil.getBit(AF.lower, 4))
+                    {
+                        isRunningInstruction = false;
+                    }
+                    break;
+                case 3:
+                    sp += s8;
+                    
+                    isRunningInstruction = true;
+                    break;
+                
+            }
+        }
+
+        public void LD_SP_D16(ushort d16)
+        {
+            switch (cycleCounter)
+            {
+                case 1:
+                    break; //opcode fetch
+                case 2:
+                    SP_splitable.lower = addressSpace[pc + 1];
+                    break;
+                case 3:
+                    SP_splitable.upper = addressSpace[pc + 2];
+
+                    sp = SP_splitable.fullRegister;w
+                    isRunningInstruction = false;
+                    break;
+            }
+        }
         
         
         

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="sdl2" Version="2.0.5" />
+      <PackageReference Include="SDL2-CS" Version="2.0.0" />
+      <PackageReference Include="SDL2-CS.dll" Version="2.0.0" />
+      <PackageReference Include="sdl2_ttf.nuget" Version="2.24.0" />
+    </ItemGroup>
+
+</Project>

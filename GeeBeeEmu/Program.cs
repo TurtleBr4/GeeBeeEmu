@@ -2,6 +2,11 @@
 using SDL2;
 using System.Text;
 
+public struct Pixel
+{
+    
+}
+
 
 namespace GeeBeeEmu
 {

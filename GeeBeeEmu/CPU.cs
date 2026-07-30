@@ -40,7 +40,9 @@ public class CPU
     int cycleCounter = 0;
     const float clockSpeed = 4.19f; //clock speed in MHz, the cpu runs 1 operation at least every 4 cycles
     private bool isRunningInstruction = false;
-
+    public Dictionary<ushort, Action> opcodeLookup;
+    
+    
     //wow what a nice block of constants im definitely going to need to use
     private const ushort readStart = 0x0000;
     const ushort romBankStart = 0x4000;
@@ -52,6 +54,31 @@ public class CPU
     const ushort ioStart = 0xFF00;
     const ushort highRamStart = 0xFF80;
     const ushort iRPosition = 0xFFFF;
+
+    //io courtesy of gpt because i aint typing allat
+    public const ushort joypad = 0xFF00;
+
+    public const ushort serialStart = 0xFF01;
+    public const ushort serialEnd = 0xFF02;
+
+    public const ushort timerStart = 0xFF04;
+    public const ushort timerEnd = 0xFF07;
+
+    public const ushort interrupt = 0xFF0F;
+
+    public const ushort audioStart = 0xFF10;
+    public const ushort audioEnd = 0xFF26;
+
+    public const ushort waveStart = 0xFF30;
+    public const ushort waveEnd = 0xFF3F;
+
+    public const ushort lcdStart = 0xFF40;
+    public const ushort lcdEnd = 0xFF4B;
+
+    public const ushort OAMDMA = 0xFF46;
+    public const ushort bootRom = 0xFF50;
+
+    
 
     public bool debugLoadRom(string filepath)
     {
@@ -190,13 +217,15 @@ public class CPU
         isRunningInstruction = false;
     }
 
-    public void LD_B_D8(byte d8)
+    public void LD_B_D8()
     {
+        byte d8;
         switch (cycleCounter)
         {
             case 1:
                 break;
             case 2:
+                d8 = addressSpace[pc + 1];
                 BC.upper = d8;
                 isRunningInstruction = false;
                 break;
@@ -208,17 +237,24 @@ public class CPU
         //not doing that now lmao
     }
 
-    public void LD_A16_SP(ushort a16)
+    public void LD_A16_SP()
     {
+        Register a16;
         switch (cycleCounter)
         {
             case 1:
                 break;
             case 2:
-                addressSpace[a16] = BitUtil.splitNonStructRegister(sp, false);
+                a16 = default;
+                a16.upper = addressSpace[pc + 1];
+                a16.lower = addressSpace[pc + 2];
+                addressSpace[a16.getFullRegister()] = BitUtil.splitNonStructRegister(sp, false);
                 break;
             case 3:
-                addressSpace[a16 + 1] = BitUtil.splitNonStructRegister(sp, true);
+                a16 = default;
+                a16.upper = addressSpace[pc + 1];
+                a16.lower = addressSpace[pc + 2];
+                addressSpace[a16.getFullRegister() + 1] = BitUtil.splitNonStructRegister(sp, true);
 
                 isRunningInstruction = false;
                 break;
@@ -290,13 +326,14 @@ public class CPU
 
     }
 
-    public void LD_C_D8(byte d8)
+    public void LD_C_D8()
     {
         switch (cycleCounter)
         {
             case 1:
                 break;
             case 2:
+                byte d8 = addressSpace[pc + 1];
                 BC.lower = d8;
                 isRunningInstruction = false;
                 break;
@@ -897,6 +934,36 @@ public class CPU
 
 
 
+
+    #endregion
+    
+    #region Lookup
+
+    public void setupTable()
+    {
+        opcodeLookup.Add(0x0000, NOP);
+        opcodeLookup.Add(0x0100, LD_BC_D16);
+        opcodeLookup.Add(0x0200, LD_BC_A);
+        opcodeLookup.Add(0x0300, INC_BC);
+        opcodeLookup.Add(0x0400, INC_B);
+        opcodeLookup.Add(0x0500, DEC_B);
+        opcodeLookup.Add(0x0600, LD_B_D8);
+        opcodeLookup.Add(0x0700, RLCA);
+        opcodeLookup.Add(0x0800, LD_A16_SP);
+        opcodeLookup.Add(0x0900, ADD_HL_BC);
+    }
+
+    public void debugFetchInstruction(ushort opcode)
+    {
+        if (opcodeLookup.TryGetValue(opcode, out Action action))
+        {
+            action();
+        }
+        else
+        {
+            throw new Exception("Unknown/Unimplemented opcode: " + opcode);
+        }
+    }
 
     #endregion
 

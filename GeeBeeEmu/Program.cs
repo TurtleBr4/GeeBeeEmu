@@ -2,10 +2,7 @@
 using SDL2;
 using System.Text;
 
-public struct Pixel
-{
-    
-}
+
 
 
 namespace GeeBeeEmu
@@ -16,12 +13,23 @@ namespace GeeBeeEmu
         public IntPtr font;
     }
     
+    public struct Pixel
+    {
+        public int shadeID; //0-3
+    }
+
+    public struct Color
+    {
+        public byte r, g, b, a;
+    }
+    
    class Program
-{
+    {
     private static IntPtr rend;
     private static IntPtr font;
 
     static CPU c = new CPU();
+    static PPU p = new PPU();
 
     //config
     const int WINDOW_WIDTH = 1240;

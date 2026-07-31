@@ -16,7 +16,7 @@ struct Register
 }
 public class CPU
 {
-    private byte[] addressSpace = new byte[65540];
+    public byte[] addressSpace = new byte[65540];
     private static byte[] debugWholeRom = new byte[1048576];
     static byte[] romFixed = new byte[16384]; //the core rom
     static byte[] romBank = new byte[16384]; //a rom bank

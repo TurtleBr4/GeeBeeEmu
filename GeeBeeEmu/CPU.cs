@@ -416,13 +416,15 @@ public class CPU
         isRunningInstruction = false;
     }
 
-    public void LD_D_D8(byte d8)
+    public void LD_D_D8()
     {
+        byte d8;
         switch (cycleCounter)
         {
             case 1:
                 break;
             case 2:
+                d8 = addressSpace[pc + 1];
                 DE.upper = d8;
                 isRunningInstruction = false;
                 break;
@@ -435,8 +437,9 @@ public class CPU
         //yeah nah
     }
 
-    public void JR_s8(byte s8)
+    public void JR_s8()
     {
+        byte s8 = addressSpace[pc + 1];
         pc += s8;
         isRunningInstruction = false;
     }
@@ -509,13 +512,14 @@ public class CPU
     }
 
 
-    public void LD_E_D8(byte d8)
+    public void LD_E_D8()
     {
         switch (cycleCounter)
         {
             case 1:
                 break;
             case 2:
+                byte d8 = addressSpace[pc + 1];
                 DE.lower = d8;
 
                 isRunningInstruction = false;
@@ -941,6 +945,7 @@ public class CPU
 
     public void setupTable()
     {
+        //row 1
         opcodeLookup.Add(0x0000, NOP);
         opcodeLookup.Add(0x0100, LD_BC_D16);
         opcodeLookup.Add(0x0200, LD_BC_A);
@@ -951,6 +956,31 @@ public class CPU
         opcodeLookup.Add(0x0700, RLCA);
         opcodeLookup.Add(0x0800, LD_A16_SP);
         opcodeLookup.Add(0x0900, ADD_HL_BC);
+        opcodeLookup.Add(0x0A00, LD_A_BC);
+        opcodeLookup.Add(0x0B00, DEC_BC);
+        opcodeLookup.Add(0x0C00, INC_C);
+        opcodeLookup.Add(0x0D00, DEC_C);
+        opcodeLookup.Add(0x0E00, LD_C_D8);
+        opcodeLookup.Add(0x0F00, RRCA);
+        //row2
+        opcodeLookup.Add(0x1000, STOP);
+        opcodeLookup.Add(0x1100, LD_DE_D16);
+        opcodeLookup.Add(0x1200, LD_DE_A);
+        opcodeLookup.Add(0x1300, INC_DE);
+        opcodeLookup.Add(0x1400, INC_D);
+        opcodeLookup.Add(0x1500, DEC_D);
+        opcodeLookup.Add(0x1600, LD_D_D8);
+        opcodeLookup.Add(0x1700, RLA);
+        opcodeLookup.Add(0x1800, JR_s8);
+        opcodeLookup.Add(0x1900, ADD_HL_DE);
+        opcodeLookup.Add(0x1A00, LD_A_DE);
+        opcodeLookup.Add(0x1B00, DEC_DE);
+        opcodeLookup.Add(0x1C00, INC_E);
+        opcodeLookup.Add(0x1D00, DEC_E);
+        opcodeLookup.Add(0x1E00, LD_E_D8);
+        opcodeLookup.Add(0x1F00, RRA);
+        //row3
+        opcodeLookup.Add(0x2000, STOP);
     }
 
     public void debugFetchInstruction(ushort opcode)
